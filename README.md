@@ -20,11 +20,13 @@ TBD
 ## Format
 The corpus is currently contained in JSON file in the following format:
 ```
- [
   {
-        "score": 11,
-        "id": "gt4x7yw",
-        "created_utc": 1617368189,
-        "body": "Oh ja, was hemmer glacht! Und es gaht wiiter, so guet! /s"
-   },
+        "score": integer
+        "id": string,
+        "created_utc": unix timestamp,
+        "body": comment body
+   }
 ```
+
+## Usage
+If you would like to use this data, please contact one of the repo maintainers
