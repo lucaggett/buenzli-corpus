@@ -1,5 +1,5 @@
 # buenzli-corpus
-Creating a swiss german corpus from the subreddit /r/buenzli
+This corpus is being created as part of the course "Creation and Annotation of Linguistic Resources" at the University of Zurich. 
 
 ## Libraries
 
