@@ -15,3 +15,14 @@ TBD
 - POS Tagging
 - Seperating Dialects
 - New format (XML?) to include thread information
+
+
+## Format
+The corpus is currently contained in JSON file in the following format:
+ [
+  {
+        "score": 11,
+        "id": "gt4x7yw",
+        "created_utc": 1617368189,
+        "body": "Oh ja, was hemmer glacht! Und es gaht wiiter, so guet! /s"
+   },
