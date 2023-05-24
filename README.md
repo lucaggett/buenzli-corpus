@@ -1,5 +1,5 @@
 # buenzli-corpus
-Creating a swiss german corpus from the subreddit /r/buenzli
+This corpus is being created as part of the course "Creation and Annotation of Linguistic Resources" at the University of Zurich. 
 
 ## Libraries
 
@@ -15,3 +15,18 @@ TBD
 - POS Tagging
 - Seperating Dialects
 - New format (XML?) to include thread information
+
+
+## Format
+The corpus is currently contained in JSON file in the following format:
+```
+  {
+        "score": integer
+        "id": string,
+        "created_utc": unix timestamp,
+        "body": comment body
+   }
+```
+
+## Usage
+If you would like to use this data, please contact one of the repo maintainers
