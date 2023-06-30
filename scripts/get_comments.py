@@ -44,7 +44,7 @@ def get_comments_range(subreddit, before, after, size=500):
         logger.info(f"no submissions found between {after} and {before}")
         return []
     # dump submissions to file
-    with open(f"json_{datetime.date.today().strftime('%d_%m_%y')}/comments_{before}_{after}.json", "w") as file:
+    with open(f"json_{datetime.date.today().strftime('%d_%m_%y')}/{subreddit}/comments_{before}_{after}.json", "w") as file:
         json.dump(submissions, file)
 
     # Return submissions
@@ -60,6 +60,14 @@ def get_comments(subreddit, before, after, step, size=500):
     :param size: Number of submissions to return (max 500) default: 500
     :return: List of comments
     """
+    # create json directory if it does not exist
+    date = datetime.date.today().strftime('%d_%m_%y')
+    if not os.path.exists(f"json_{date}"):
+        os.mkdir(f"json_{date}")
+    # create subreddit directory if it does not exist
+    if not os.path.exists(f"json_{date}/{subreddit}"):
+        os.mkdir(f"json_{date}/{subreddit}")
+
     if before - after < step:
         logger.error(f"step size {step} is too large for time frame {before} - {after}")
         return []
@@ -72,14 +80,9 @@ def get_comments(subreddit, before, after, step, size=500):
         upper_bound += step
 
 def main():
-    # Make JSON DIR
-    try:
-        os.mkdir(f"json_{datetime.date.today().strftime('%d_%m_%y')}")
-    except FileExistsError:
-        pass
     # get comments from subreddit /r/buenzli from 2013-05-23 to 2023-01-01 in 1 week
     # steps and save them to file
-    comments = get_comments("buenzli", 1672531200, 1369267200, 604800)
+    comments = get_comments("schwiiz", 1672531200, 1369267200, 604800)
     # save comments to file
     with open("comments_full.json", "w") as file:
         json.dump(comments, file)
