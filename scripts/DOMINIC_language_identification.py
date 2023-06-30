@@ -7,6 +7,9 @@ from textblob import TextBlob as tb
 import os
 import xml.etree.ElementTree as ET
 
+#load the file "dictionary"
+from DOMINIC_import_dict import fr_word_ls, it_word_ls, en_word_ls
+
 def import_NOAH(path):
     """
     Imports the NOAH corpus into a list of strings
@@ -47,10 +50,32 @@ def identify_language(text):
 NOAH_path = "C:/Users/Dominic-Asus/Documents/UZH/Semester_4/CALiR/NOAH-Corpus-master/"
 NOAH = import_NOAH(NOAH_path)
 
+count_supposed_foreign = 0
+count_foreign = 0
+count_words = 0
+
+def swiss_german_check(word):
+    #catch swiss german verbs in 2nd person plural that look like english participles
+    if len(word) >= 4 and word[-2:] == "ed" and word[-4] == "e":
+        return True
+    elif word.lower() == "also":
+        return True
+    else:
+        return False
+
+
 for article in NOAH:
     for sentence in article:
         for word in sentence:
             word_analysis = identifier.classify(word)
-            if word_analysis[1] > 0.8 and word_analysis[0] != 'de':
-                print(word)
-                print(word_analysis)
+            if word_analysis[1] > 0.95 and word_analysis[0] != 'de':
+                count_supposed_foreign += 1
+                if (word_analysis[0] == 'fr' and word in fr_word_ls) or (word_analysis[0] == 'it' and word in it_word_ls) or (word_analysis[0] == 'en' and word in en_word_ls) and swiss_german_check is False:
+                    print(word)
+                    print(word_analysis)
+                    count_foreign += 1
+            count_words += 1
+
+print(count_supposed_foreign)
+print(count_foreign)
+print(count_words)
