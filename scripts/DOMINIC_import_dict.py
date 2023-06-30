@@ -18,4 +18,4 @@ with open("C:/Users/Dominic-Asus/Documents/UZH/Semester_4/CALiR/words_alpha.txt"
           encoding="utf-8") as f:
     en_word_ls = f.read().splitlines()
 
-print(len(en_word_ls))
+#print(len(en_word_ls))

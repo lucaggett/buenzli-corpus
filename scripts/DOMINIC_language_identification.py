@@ -67,13 +67,18 @@ def swiss_german_check(word):
 for article in NOAH:
     for sentence in article:
         for word in sentence:
+            count_in_sentence = 0
             word_analysis = identifier.classify(word)
             if word_analysis[1] > 0.95 and word_analysis[0] != 'de':
                 count_supposed_foreign += 1
                 if (word_analysis[0] == 'fr' and word in fr_word_ls) or (word_analysis[0] == 'it' and word in it_word_ls) or (word_analysis[0] == 'en' and word in en_word_ls) and swiss_german_check is False:
-                    print(word)
-                    print(word_analysis)
+                    count_in_sentence += 1
+                    #print(word)
+                    #print(word_analysis)
                     count_foreign += 1
+        if count_in_sentence >= len(sentence) > 2:
+            print(f"Supposed foreign sentence: {sentence}")
+
             count_words += 1
 
 print(count_supposed_foreign)
