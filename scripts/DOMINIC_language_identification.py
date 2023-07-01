@@ -68,6 +68,7 @@ for article in NOAH:
     for sentence in article:
         for word in sentence:
             count_in_sentence = 0
+            count_words += 1
             word_analysis = identifier.classify(word)
             if word_analysis[1] > 0.95 and word_analysis[0] != 'de':
                 count_supposed_foreign += 1
