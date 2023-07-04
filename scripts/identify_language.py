@@ -12,7 +12,7 @@ def create_swiss_german_dictionary() -> set:
     files = ("blick.xml", "blogs.xml", "schobinger.xml", "swatch.xml", "wiki.xml")
     swiss_german_words = set()
     for file in files:
-        tree = ET.parse(f"NOAH-Corpus/{file}")
+        tree = ET.parse(f"../NOAH-Corpus/{file}")
         root = tree.getroot()
         for article in root:
             for sentence in article:
@@ -20,7 +20,7 @@ def create_swiss_german_dictionary() -> set:
                 for word in sentence:
                     word_count += 1
                     swiss_german_words.add(word.text)
-    print(f"Number of words: {word_count}")
-    print(f"Number of sentences: {sentence_count}")
+    #print(f"Number of words: {word_count}")
+    #print(f"Number of sentences: {sentence_count}")
     return swiss_german_words
 

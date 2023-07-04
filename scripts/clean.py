@@ -37,8 +37,8 @@ class Comment:
 
 comments = []
 deleted_count = 0
-for jsonfile in os.listdir("json"):
-    with open(f"json/{jsonfile}", "r") as f:
+for jsonfile in os.listdir("../json/raw_json_weeks"):
+    with open(f"../json/raw_json_weeks/{jsonfile}", "r") as f:
         data = json.load(f)
     for comment in data:
         if comment["body"] != "[deleted]":

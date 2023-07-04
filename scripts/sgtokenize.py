@@ -61,7 +61,7 @@ def main():
         created_utc_element = ET.SubElement(comment_element, "created_utc")
         created_utc_element.text = str(comment["created_utc"])
     # write the xml to a file
-    tree.write("comments.xml")
+    tree.write("comments.xml", encoding="utf-8", xml_declaration=True)
 
 if __name__ == "__main__":
     main()
