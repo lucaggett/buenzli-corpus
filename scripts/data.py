@@ -143,6 +143,3 @@ plt.title("Word length distribution")
 plt.xlabel("Word length")
 plt.ylabel("Percentage")
 plt.show()
-
-print("Average word length NOAH: " + str(avg_word_length_NOAH))
-print("Average word length Buenzli: " + str(avg_word_length_buenzli))
