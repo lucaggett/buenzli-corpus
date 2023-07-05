@@ -1,3 +1,4 @@
+import random
 import xml.etree.ElementTree as ET
 import json
 import logging
@@ -6,7 +7,7 @@ from typing import List
 
 import numpy as np
 
-from importers import import_NOAH_sentences, import_buenzli
+from data import import_NOAH_sentences, import_buenzli
 
 
 def create_swiss_german_dictionary() -> set:
@@ -32,13 +33,12 @@ def create_swiss_german_dictionary() -> set:
 
 
 class NgramTokenizer:
-
     def __init__(self, ngram_order: int):
         self.ngram_order = ngram_order
 
     def __call__(self, text: str) -> List[str]:
         """
-        Tokenize text into ngrams, yielding each ngram in turn to reduce memory usage
+        Tokenize text into ngrams, yielding each ngram in turn to reduce memory usage. This assumes the text is already pretokenized and split by spaces
         """
 
         tokens = text.split(" ")
@@ -163,21 +163,51 @@ def main():
     buenzli_corpus = import_buenzli("../buenzli-corpus/comments.json")
 
     for comment in buenzli_corpus:
-        comment["language"] = max(models, key=lambda x: models[x].predict(comment["body"]))
+        comment["language"] = (max(models, key=lambda x: models[x].predict(comment["body"])))
 
-    GSW_count = 0
-    non_GSW_count = 0
+    GSW_comments = []
+    other_comments = {lang: [] for lang in models if lang != "GSW"}
+
     for comment in buenzli_corpus:
         if comment["language"] != "GSW":
-            print(comment["body"])
-            print(comment["language"])
-            print()
-            non_GSW_count += 1
+            other_comments[comment["language"]].append(comment["body"])
         else:
-            GSW_count += 1
+            GSW_comments.append(comment["body"])
     print("\n"*5)
-    print(f"GSW: {GSW_count}")
-    print(f"non-GSW: {non_GSW_count}")
+    print("GSW: ", len(GSW_comments))
+    for lang in other_comments:
+        print(lang, len(other_comments[lang]))
+
+    # print a sample of the each language
+    for lang in other_comments:
+        print("\n"*5)
+        print("*"*10, lang, "*"*10)
+        for comment in random.sample(other_comments[lang], 10):
+            print(comment)
+            print("-"*20)
+
+        print("\n"*5)
+        print("*"*10, "GSW", "*"*10)
+        for comment in random.sample(GSW_comments, 10):
+            print(comment)
+            print("-"*20)
+
+
+
+
+
+    """
+    This performs pretty okay overall. 
+    The dutch classification mostly catches swiss german sentences, so it could be removed.
+    The italian classification is catches some swiss german sentences
+    
+    GSW: 51853
+    non-GSW: 7098
+    EN: 1242
+    DE: 5583
+    NL: 206
+    IT: 67
+    """
 
 if __name__ == "__main__":
     main()

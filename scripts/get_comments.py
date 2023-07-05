@@ -6,6 +6,13 @@ import time
 import datetime
 import logging
 
+"""
+NOTE: The Pushshift API was taken down some time in March of 2023, so this script does not work anymore. 
+The dataset powering pushshift is still available as a torrent (https://academictorrents.com/details/7c0645c94321311bb05bd879ddee4d0eba08aaee)
+"""
+
+
+
 API_LINK = "https://api.pushshift.io/reddit/search/comment"
 logger = logging.getLogger(__name__)
 logging.basicConfig(level=logging.INFO)
