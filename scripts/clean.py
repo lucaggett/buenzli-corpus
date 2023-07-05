@@ -27,6 +27,9 @@ def replace_unicode_chars(input_file, output_file):
 
 @dataclass
 class Comment:
+    """
+    Dataclass for a simplified reddit comment
+    """
     score: int
     id: str
     created_utc: int
@@ -37,10 +40,13 @@ class Comment:
 
 comments = []
 deleted_count = 0
+
+# Read all json files in ../json/raw_json_weeks and create a list of comments
 for jsonfile in os.listdir("../json/raw_json_weeks"):
     with open(f"../json/raw_json_weeks/{jsonfile}", "r") as f:
         data = json.load(f)
     for comment in data:
+        # Add all comments that are not deleted to the list
         if comment["body"] != "[deleted]":
             comments.append(Comment(comment["score"], comment["id"], comment["created_utc"], comment["body"]))
         else:

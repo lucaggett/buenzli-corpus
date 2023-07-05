@@ -1,4 +1,12 @@
 import xml.etree.ElementTree as ET
+import json
+import logging
+from collections import Counter
+from typing import List
+
+import numpy as np
+
+from importers import import_NOAH_sentences, import_buenzli
 
 
 def create_swiss_german_dictionary() -> set:
@@ -20,7 +28,156 @@ def create_swiss_german_dictionary() -> set:
                 for word in sentence:
                     word_count += 1
                     swiss_german_words.add(word.text)
-    #print(f"Number of words: {word_count}")
-    #print(f"Number of sentences: {sentence_count}")
     return swiss_german_words
 
+
+class NgramTokenizer:
+
+    def __init__(self, ngram_order: int):
+        self.ngram_order = ngram_order
+
+    def __call__(self, text: str) -> List[str]:
+        """
+        Tokenize text into ngrams, yielding each ngram in turn to reduce memory usage
+        """
+
+        tokens = text.split(" ")
+
+        for i in range(len(tokens) - self.ngram_order + 1):
+            yield " ".join(tokens[i:i + self.ngram_order])
+
+
+class BigramLanguagePredictor:
+
+    def __init__(self, ngram_order: int = None, model_is_trained: bool = False):
+        assert (ngram_order is not None) or model_is_trained
+
+        self.ngram_order = ngram_order
+
+        self.probs = {}
+
+    def create_propabilities(self, text: str):
+        """
+        Train language model on text, should be able to recognise if a given ngram is in the language it was trained on
+        """
+
+        tokenizer = NgramTokenizer(self.ngram_order)
+
+        ngrams = tokenizer(text)
+        count = Counter(ngrams)
+        total = sum(count.values())
+        self.probs = {ngram: np.log(count[ngram] / total) for ngram in count}
+
+        self.model_is_trained = True
+
+    def predict(self, text: str):
+        """
+        Predict the probability of a given text being in the language the model was trained on
+        """
+        tokenizer = NgramTokenizer(self.ngram_order)
+
+        ngrams = tokenizer(text)
+        ngrams = [ngram for ngram in ngrams]
+
+        return sum(self.probs[ngram] if ngram in self.probs else -100 for ngram in ngrams) / (1 + len(ngrams)/5)
+
+    def load(self, file_path):
+        with open(file_path, 'r', encoding="utf-8") as handle:
+            self.probs = json.load(handle)
+
+        self.ngram_order = self.probs["__ORDER__"]
+
+        return self
+
+    def save(self, file_path):
+        self.probs["__ORDER__"] = self.ngram_order
+
+        with open(file_path, 'w') as handle:
+            json.dump(self.probs, handle, ensure_ascii=True, indent=2)
+
+
+def create_swiss_german_model():
+    sentences = import_NOAH_sentences("../NOAH-Corpus/")
+
+    model = BigramLanguagePredictor(ngram_order=2)
+    model.create_propabilities(" ".join(sentences))
+
+    model.save("../models/swiss_german_model.json")
+    logging.info("Saved model")
+    return model
+
+def create_english_model():
+    with open("../other_data/train.en", "r") as f:
+        text = f.readlines()
+
+    model = BigramLanguagePredictor(ngram_order=2)
+    model.create_propabilities(" ".join(text))
+
+    model.save("../models/english_model.json")
+
+    return model
+
+def create_german_model():
+    with open("../other_data/train.de", "r") as f:
+        text = f.readlines()
+
+    model = BigramLanguagePredictor(ngram_order=2)
+    model.create_propabilities(" ".join(text))
+
+    model.save("../models/german_model.json")
+
+    return model
+
+def create_dutch_model():
+    with open("../other_data/train.nl", "r") as f:
+        text = f.readlines()
+
+    model = BigramLanguagePredictor(ngram_order=2)
+    model.create_propabilities(" ".join(text))
+
+    model.save("../models/dutch_model.json")
+
+    return model
+
+def create_italian_model():
+    with open("../other_data/train.it", "r") as f:
+        text = f.readlines()
+
+    model = BigramLanguagePredictor(ngram_order=2)
+    model.create_propabilities(" ".join(text))
+
+    model.save("../models/italian_model.json")
+
+    return model
+
+def main():
+    logging.basicConfig(level=logging.INFO)
+    models = {
+        "GSW": create_swiss_german_model(),
+        "EN": create_english_model(),
+        "DE": create_german_model(),
+        "NL": create_dutch_model(),
+        "IT": create_italian_model(),
+    }
+
+    buenzli_corpus = import_buenzli("../buenzli-corpus/comments.json")
+
+    for comment in buenzli_corpus:
+        comment["language"] = max(models, key=lambda x: models[x].predict(comment["body"]))
+
+    GSW_count = 0
+    non_GSW_count = 0
+    for comment in buenzli_corpus:
+        if comment["language"] != "GSW":
+            print(comment["body"])
+            print(comment["language"])
+            print()
+            non_GSW_count += 1
+        else:
+            GSW_count += 1
+    print("\n"*5)
+    print(f"GSW: {GSW_count}")
+    print(f"non-GSW: {non_GSW_count}")
+
+if __name__ == "__main__":
+    main()
