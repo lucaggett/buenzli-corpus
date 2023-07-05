@@ -192,7 +192,10 @@ def main():
             print(comment)
             print("-"*20)
 
+    import json
 
+    with open("comments.json", "w") as f:
+        json.dump(buenzli_corpus, f, indent=2)
 
 
 
