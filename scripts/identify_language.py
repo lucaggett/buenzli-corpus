@@ -107,7 +107,7 @@ def create_swiss_german_model():
     return model
 
 def create_english_model():
-    with open("../other_data/train.en", "r") as f:
+    with open("../other_data/train.en", "r", encoding="utf-8") as f:
         text = f.readlines()
 
     model = BigramLanguagePredictor(ngram_order=2)
@@ -118,7 +118,7 @@ def create_english_model():
     return model
 
 def create_german_model():
-    with open("../other_data/train.de", "r") as f:
+    with open("../other_data/train.de", "r", encoding="utf-8") as f:
         text = f.readlines()
 
     model = BigramLanguagePredictor(ngram_order=2)
@@ -129,7 +129,7 @@ def create_german_model():
     return model
 
 def create_dutch_model():
-    with open("../other_data/train.nl", "r") as f:
+    with open("../other_data/train.nl", "r", encoding="utf-8") as f:
         text = f.readlines()
 
     model = BigramLanguagePredictor(ngram_order=2)
@@ -140,7 +140,7 @@ def create_dutch_model():
     return model
 
 def create_italian_model():
-    with open("../other_data/train.it", "r") as f:
+    with open("../other_data/train.it", "r", encoding="utf-8") as f:
         text = f.readlines()
 
     model = BigramLanguagePredictor(ngram_order=2)
@@ -150,13 +150,25 @@ def create_italian_model():
 
     return model
 
+def create_french_model():
+    with open("../other_data/clean_train.fr", "r", encoding="utf-8") as f:
+        text = f.readlines()
+
+    model = BigramLanguagePredictor(ngram_order=2)
+    model.create_propabilities(" ".join(text))
+
+    model.save("../models/french_model.json")
+
+    return model
+
 def main():
     logging.basicConfig(level=logging.INFO)
     models = {
         "GSW": create_swiss_german_model(),
         "EN": create_english_model(),
         "DE": create_german_model(),
-        "NL": create_dutch_model(),
+        #"NL": create_dutch_model(),
+        "FR": create_french_model(),
         "IT": create_italian_model(),
     }
 
@@ -182,7 +194,7 @@ def main():
     for lang in other_comments:
         print("\n"*5)
         print("*"*10, lang, "*"*10)
-        for comment in random.sample(other_comments[lang], 10):
+        for comment in random.sample(other_comments[lang], 50):
             print(comment)
             print("-"*20)
 
@@ -192,11 +204,15 @@ def main():
             print(comment)
             print("-"*20)
 
+    #for each language, print the number of comments
+    for lang in other_comments:
+        print(lang, len(other_comments[lang]))
+
+
     import json
 
     with open("comments.json", "w") as f:
         json.dump(buenzli_corpus, f, indent=2)
-
 
 
     """
@@ -210,6 +226,7 @@ def main():
     DE: 5583
     NL: 206
     IT: 67
+    FR: ?
     """
 
 if __name__ == "__main__":
