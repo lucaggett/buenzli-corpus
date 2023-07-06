@@ -12,6 +12,7 @@ def import_NOAH(path):
     # create set of words used in corpus
     words = set()
     words_frequencies = {}
+    sentences = []
 
     # iterate through files
     for file in files:
@@ -23,17 +24,19 @@ def import_NOAH(path):
         for article in root.iter("document"):
             for sent in article.iter("s"):
                 # add sentence to list
-
+                sentence = []
                 for word in sent.iter("w"):
                     # add word to set
                     words.add(word.text)
+                    sentence.append(word.text)
                     if word.text in words_frequencies:
                         words_frequencies[word.text] += 1
                     else:
                         words_frequencies[word.text] = 1
+                sentences.append(sentence)
 
     # return set of words
-    return words, words_frequencies
+    return words, words_frequencies, sentences
 
 
 def import_NOAH_sentences(path):
@@ -101,29 +104,41 @@ def remove_punct(corpus):
 remove_punct(NOAH_frequencies)
 
 NOAH_frequencies_sorted = sorted(NOAH_frequencies.items(), key=lambda x: x[1], reverse=True)
+# calculate the avg word length in the noahs corpus
+
+
+
 
 # for each word length, count the number of words with that length
 word_length_count = {}
 for word in NOAH_frequencies_sorted:
     if len(word[0]) in word_length_count:
-        word_length_count[len(word[0])] += 1
+        word_length_count[len(word[0])] += word[1]
     else:
         word_length_count[len(word[0])] = 1
 
+sum_length = sum([key * value for key, value in word_length_count.items()])
+avg_NOAH = sum_length/sum(dict(NOAH_frequencies_sorted).values())
+#print(avg_NOAH)
+
 # plot the word length distribution
 import matplotlib.pyplot as plt
-from buenzli_frequencies import buenzli_frequencies
+from buenzli_frequencies import sorted_buenzli
 
-remove_punct(buenzli_frequencies)
+# calculate the avg word length in the buenzli corpus
 
-buenzli_frequencies_sorted = sorted(buenzli_frequencies.items(), key=lambda x: x[1], reverse=True)
+
 # for each word length, count the number of words with that length
 word_length_count_buenzli = {}
-for word in buenzli_frequencies_sorted:
+for word in sorted_buenzli:
     if len(word[0]) in word_length_count_buenzli:
-        word_length_count_buenzli[len(word[0])] += 1
+        word_length_count_buenzli[len(word[0])] += word[1]
     else:
         word_length_count_buenzli[len(word[0])] = 1
+
+sum_length_buenzli = sum([key * value for key, value in word_length_count_buenzli.items()])
+avg_buenzli = sum_length_buenzli/sum(dict(sorted_buenzli).values())
+#print(avg_buenzli)
 
 # as y-axis, use the percentage of words with that length
 # set bars as see-through
