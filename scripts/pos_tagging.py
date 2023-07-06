@@ -44,17 +44,18 @@ def tag_buenzli():
 
 def tag_NOAH():
     # import the sentences
-    sentences = import_NOAH_sentences("../NOAH-Corpus")
+    sentences = import_NOAH_sentences("../NOAH-Corpus/")
     # iterate over the sentences and tag them
     tagged_sentences = []
     for sentence in tqdm.tqdm(sentences):
         tagged_sentences.append(pos_tag(sentence))
 
     # write the sentences to a new file
-    with open("NOAH_sentences_pos.csv", "w") as f:
+    with open("NOAH_sentences_pos.csv", "w", encoding='utf-8') as f:
         for sentence in tagged_sentences:
-            f.write(sentence + "\n")
+            f.write(str(sentence) + "\n")
 
 
 if __name__ == "__main__":
-    tag_buenzli()
+    #tag_buenzli()
+    tag_NOAH()
